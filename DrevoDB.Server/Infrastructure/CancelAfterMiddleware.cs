@@ -1,6 +1,6 @@
-﻿using DrevoDB.WebApi.Settings;
+﻿using DrevoDB.Server.Settings;
 
-namespace DrevoDB.WebApi.Infrastructure;
+namespace DrevoDB.Server.Infrastructure;
 
 class CancelAfterMiddleware
 {

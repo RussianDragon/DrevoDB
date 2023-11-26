@@ -1,7 +1,7 @@
 ﻿using DrevoDB.Core;
-using DrevoDB.WebApi.Infrastructure.Models;
+using DrevoDB.Server.Infrastructure.Models;
 
-namespace DrevoDB.WebApi.Infrastructure;
+namespace DrevoDB.Server.Infrastructure;
 
 class TraceMiddleware
 {

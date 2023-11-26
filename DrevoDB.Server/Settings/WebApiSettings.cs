@@ -1,4 +1,4 @@
-﻿namespace DrevoDB.WebApi.Settings;
+﻿namespace DrevoDB.Server.Settings;
 
 class WebApiSettings
 {

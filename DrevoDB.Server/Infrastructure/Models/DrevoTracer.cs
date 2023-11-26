@@ -1,6 +1,6 @@
 ﻿using DrevoDB.Core;
 
-namespace DrevoDB.WebApi.Infrastructure.Models;
+namespace DrevoDB.Server.Infrastructure.Models;
 
 public class DrevoTracer : IDrevoTracer
 {

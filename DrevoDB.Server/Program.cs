@@ -1,7 +1,9 @@
 using DrevoDB.Core;
-using DrevoDB.WebApi.Infrastructure;
-using DrevoDB.WebApi.Infrastructure.Models;
-using DrevoDB.WebApi.Settings;
+using DrevoDB.DBTasks;
+using DrevoDB.Server.Infrastructure;
+using DrevoDB.Server.Infrastructure.Models;
+using DrevoDB.Server.Settings;
+using DrevoDB.SQLClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NLog;
@@ -43,6 +45,10 @@ var webApiSettings = builder.Configuration.GetRequiredSection("WebApiSettings").
 builder.Services.AddSingleton(webApiSettings);
 #endregion
 
+#region  Modules
+builder.Services.AddSQLClient();
+builder.Services.AddDBTasks();
+#endregion
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

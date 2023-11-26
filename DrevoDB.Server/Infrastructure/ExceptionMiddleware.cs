@@ -3,7 +3,7 @@ using DrevoDB.Core.Models;
 using Newtonsoft.Json;
 using System.Net;
 
-namespace DrevoDB.WebApi.Infrastructure;
+namespace DrevoDB.Server.Infrastructure;
 
 class ExceptionMiddleware
 {
