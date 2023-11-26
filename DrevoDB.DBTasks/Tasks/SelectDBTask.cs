@@ -3,7 +3,7 @@ using DrevoDB.DBTasks.Abstractions.Tasks;
 
 namespace DrevoDB.DBTasks.Tasks;
 
-public class SelectDBTask : ISelectDBTask
+internal class SelectDBTask : ISelectDBTask
 {
     public Task<IDBTaskResult> Execute()
     {

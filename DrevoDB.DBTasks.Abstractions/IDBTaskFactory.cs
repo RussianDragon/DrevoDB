@@ -4,7 +4,11 @@ namespace DrevoDB.DBTasks.Abstractions;
 
 public interface IDBTaskFactory
 {
-    ISelectDBTask CreateSelectTask();
     ISaveTableDBTask CreateSaveTableTask();
     IDropTableDBTask CreateDropTableTask();
+
+    ISaveColumnDBTask CreateSaveColumnTask();
+    IDropColumnDBTask CreateDropColumnTask();
+
+    ISelectDBTask CreateSelectTask();
 }

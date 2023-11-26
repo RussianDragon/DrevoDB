@@ -5,8 +5,8 @@ public enum ColumnsTypes
     None = 0,
 
     #region String
-    Text = 1,
-    LongText = 2,
+    Char = 1,
+    Text = 2,
     #endregion
 
     #region Numbers

@@ -1,7 +1,9 @@
 ﻿using DrevoDB.Core;
 using DrevoDB.DBTasks.Abstractions;
 using DrevoDB.DBTasks.Abstractions.Tasks;
+using DrevoDB.InfrastructureTypes;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
+using System.Globalization;
 using System.Text;
 
 namespace DrevoDB.SQLClient;
@@ -74,7 +76,62 @@ internal class SQLService
 
     private ISaveTableDBTask ParseСreateTable(CreateTableStatement createTableStatement)
     {
+        List<IDBTask> tasks = new List<IDBTask>();
+
+        #region table settings
         var task = this.TaskFactory.CreateSaveTableTask();
+        tasks.Add(task);
+
+        task.IsNewTable = true;
+        task.Name = createTableStatement.SchemaObjectName.BaseIdentifier.Value;
+        #endregion
+
+        #region column settings
+        foreach (var columnDefinition in createTableStatement.Definition.ColumnDefinitions)
+        {
+            var column = this.TaskFactory.CreateSaveColumnTask();
+            tasks.Add(column);
+
+            column.IsNewColumn = true;
+            column.Name = columnDefinition.ColumnIdentifier.Value;
+
+            var typeStr = columnDefinition.DataType.Name.BaseIdentifier.Value.ToLower(CultureInfo.InvariantCulture);
+            column.Type = typeStr switch
+            {
+                "char" => ColumnsTypes.Char,
+                "text" => ColumnsTypes.Text,
+
+                "int" => ColumnsTypes.Integer,
+
+                "datetime" => ColumnsTypes.DateTime,
+                "date" => ColumnsTypes.Date,
+                "time" => ColumnsTypes.Time,
+                _ => throw new ApiException($"Not support type \"{typeStr}\"")
+            };
+
+            foreach (var constraint in columnDefinition.Constraints)
+            {
+                switch (constraint)
+                {
+                    case NullableConstraintDefinition nullableConstraint:
+                        {
+                            column.IsNull = nullableConstraint.Nullable;
+                            break;
+                        }
+                    case UniqueConstraintDefinition uniqueConstraint:
+                        {
+                            column.IsUnique = true;
+                            column.IsPrimaryKey = uniqueConstraint.IsPrimaryKey;
+                            break;
+                        }
+                    default:
+                        {
+                            throw new ApiException($"Not support type \"{constraint.GetType()}\"");
+                        }
+                }
+            }
+        }
+        #endregion
 
         return task;
     }

@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DrevoDB.Core\DrevoDB.Core.csproj" />
     <ProjectReference Include="..\DrevoDB.DBTasks.Abstractions\DrevoDB.DBTasks.Abstractions.csproj" />
   </ItemGroup>
 

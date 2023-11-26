@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DrevoDB.Core\DrevoDB.Core.csproj" />
     <ProjectReference Include="..\DrevoDB.InfrastructureTypes\DrevoDB.InfrastructureTypes.csproj" />
   </ItemGroup>
 

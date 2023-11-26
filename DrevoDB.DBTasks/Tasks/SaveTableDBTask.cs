@@ -3,8 +3,11 @@ using DrevoDB.DBTasks.Abstractions.Tasks;
 
 namespace DrevoDB.DBTasks.Tasks;
 
-public class SaveTableDBTask : ISaveTableDBTask
+internal class SaveTableDBTask : ISaveTableDBTask
 {
+    public bool IsNewTable { get; set; }
+    public string Name { get; set; } = string.Empty;
+
     public Task<IDBTaskResult> Execute()
     {
         return Task.FromResult<IDBTaskResult>(new DBTaskResult());

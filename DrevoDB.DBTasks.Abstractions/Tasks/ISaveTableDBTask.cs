@@ -1,5 +1,9 @@
-﻿namespace DrevoDB.DBTasks.Abstractions.Tasks;
+﻿using DrevoDB.InfrastructureTypes;
+
+namespace DrevoDB.DBTasks.Abstractions.Tasks;
 
 public interface ISaveTableDBTask : IDBTask
 {
+    bool IsNewTable { get; set; }
+    string Name { get; set; }
 }
