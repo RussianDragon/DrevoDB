@@ -15,6 +15,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DrevoDB.Core\DrevoDB.Core.csproj" />
+    <ProjectReference Include="..\DrevoDB.DBColumn.DBChar\DrevoDB.DBColumn.DBChar.csproj" />
+    <ProjectReference Include="..\DrevoDB.DBColumn.DBDateTime\DrevoDB.DBColumn.DBDateTime.csproj" />
+    <ProjectReference Include="..\DrevoDB.DBColumn.DBDate\DrevoDB.DBColumn.DBDate.csproj" />
+    <ProjectReference Include="..\DrevoDB.DBColumn.DBInteger\DrevoDB.DBColumn.DBInteger.csproj" />
+    <ProjectReference Include="..\DrevoDB.DBColumn.DBText\DrevoDB.DBColumn.DBText.csproj" />
+    <ProjectReference Include="..\DrevoDB.DBColumn.DBTime\DrevoDB.DBColumn.DBTime.csproj" />
+    <ProjectReference Include="..\DrevoDB.DBColumns\DrevoDB.DBColumns.csproj" />
     <ProjectReference Include="..\DrevoDB.DBProfiler\DrevoDB.DBProfiler.csproj" />
     <ProjectReference Include="..\DrevoDB.DBTasks\DrevoDB.DBTasks.csproj" />
     <ProjectReference Include="..\DrevoDB.SQLClient\DrevoDB.SQLClient.csproj" />

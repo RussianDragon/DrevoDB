@@ -1,11 +1,12 @@
-﻿using DrevoDB.DBTasks.Abstractions.TaskResult;
-using DrevoDB.InfrastructureTypes;
+﻿using DrevoDB.DBColumn.Abstractions;
+using DrevoDB.DBTasks.Abstractions.TaskResult;
 
 namespace DrevoDB.DBTasks;
 
 internal class DBTaskResult : IDBTaskTableResult
 {
-    public IReadOnlyList<Column> Columns { get; set; } = new Column[0];
+    public IReadOnlyList<IDBColumn> Columns { get; set; } = new IDBColumn[0];
+
     public async IAsyncEnumerable<IReadOnlyList<object>> Rows()
     {
         await Task.Delay(0);

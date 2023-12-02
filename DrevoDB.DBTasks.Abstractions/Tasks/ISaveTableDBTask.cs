@@ -1,6 +1,4 @@
-﻿using DrevoDB.InfrastructureTypes;
-
-namespace DrevoDB.DBTasks.Abstractions.Tasks;
+﻿namespace DrevoDB.DBTasks.Abstractions.Tasks;
 
 public interface ISaveTableDBTask : IDBTask
 {

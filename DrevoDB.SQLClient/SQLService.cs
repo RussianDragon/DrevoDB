@@ -3,13 +3,10 @@ using DrevoDB.DBProfiler.Abstractions;
 using DrevoDB.DBTasks.Abstractions;
 using DrevoDB.DBTasks.Abstractions.TaskResult;
 using DrevoDB.DBTasks.Abstractions.Tasks;
-using DrevoDB.InfrastructureTypes;
 using DrevoDB.SQLClient.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
-using System.Data.Common;
 using System.Globalization;
 using System.Text;
-using System.Transactions;
 
 namespace DrevoDB.SQLClient;
 
@@ -177,20 +174,7 @@ internal class SQLService
 
             column.IsNewColumn = true;
             column.Name = columnDefinition.ColumnIdentifier.Value;
-
-            var typeStr = columnDefinition.DataType.Name.BaseIdentifier.Value.ToLower(CultureInfo.InvariantCulture);
-            column.Type = typeStr switch
-            {
-                "char" => ColumnsTypes.Char,
-                "text" => ColumnsTypes.Text,
-
-                "int" => ColumnsTypes.Integer,
-
-                "datetime" => ColumnsTypes.DateTime,
-                "date" => ColumnsTypes.Date,
-                "time" => ColumnsTypes.Time,
-                _ => throw new ApiException($"Not support type \"{typeStr}\"")
-            };
+            column.TypeName = columnDefinition.DataType.Name.BaseIdentifier.Value.ToLower(CultureInfo.InvariantCulture);
 
             foreach (var constraint in columnDefinition.Constraints)
             {

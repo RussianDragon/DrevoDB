@@ -1,4 +1,11 @@
 using DrevoDB.Core;
+using DrevoDB.DBColumn.DBChar;
+using DrevoDB.DBColumn.DBDate;
+using DrevoDB.DBColumn.DBDateTime;
+using DrevoDB.DBColumn.DBInteger;
+using DrevoDB.DBColumn.DBText;
+using DrevoDB.DBColumn.DBTime;
+using DrevoDB.DBColumns;
 using DrevoDB.DBProfiler;
 using DrevoDB.DBTasks;
 using DrevoDB.Server.Infrastructure;
@@ -50,6 +57,15 @@ builder.Services.AddSingleton(webApiSettings);
 builder.Services.AddDBProfiler();
 builder.Services.AddDBTasks();
 builder.Services.AddSQLClient();
+builder.Services.AddDBColumnsFactory();
+#region  Columns
+builder.Services.AddDBTextColumnFactory();
+builder.Services.AddDBCharColumnFactory();
+builder.Services.AddDBIntegerColumnFactory();
+builder.Services.AddDBTimeColumnFactory();
+builder.Services.AddDBDateTimeColumnFactory();
+builder.Services.AddDBDateColumnFactory();
+#endregion
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();
