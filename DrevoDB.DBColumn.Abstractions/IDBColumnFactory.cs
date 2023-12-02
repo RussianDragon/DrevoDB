@@ -1,7 +1,8 @@
 ﻿namespace DrevoDB.DBColumn.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 public interface IDBColumnFactory
 {
     string TypeName { get; }
-    IDBColumn CrateColumn(string name, IEnumerable<DBColumnParam> columnParams);
+    IDBColumn CreateColumn(IServiceProvider serviceProvider, string name, IEnumerable<DBColumnParam> columnParams);
 }

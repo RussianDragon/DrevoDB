@@ -1,9 +1,15 @@
 ﻿using DrevoDB.Core;
+using DrevoDB.DBColumn.Abstractions;
 using DrevoDB.DBProfiler.Abstractions;
+using DrevoDB.DBSaveColumnTask.Abstractions;
+using DrevoDB.DBSaveTableTask.Abstractions;
+using DrevoDB.DBSelectTask.Abstractions;
 using DrevoDB.DBTasks.Abstractions;
 using DrevoDB.DBTasks.Abstractions.TaskResult;
-using DrevoDB.DBTasks.Abstractions.Tasks;
+using DrevoDB.DBTransactionTask.Abstractions;
 using DrevoDB.SQLClient.Models;
+using DrevoDB.SQLClient.Requests;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System.Globalization;
 using System.Text;
@@ -12,19 +18,34 @@ namespace DrevoDB.SQLClient;
 
 internal class SQLService
 {
-    private IDBTaskFactory TaskFactory { get; }
+    private IServiceProvider ServiceProvider { get; }
     private IProfiler Profiler { get; }
-    public SQLService(IDBTaskFactory taskFactory, IProfiler profiler)
+    private ISaveTableDBTaskFactory SaveTableTaskFactory { get; }
+    private ISaveColumnDBTaskFactory SaveColumnTaskFactory { get; }
+    private ISelectDBTaskFactory SelectDBTaskFactory { get; }
+    private ITransactionDBTaskFactory TransactionTaskFactory { get; }
+    private NLog.ILogger Logger { get; } = NLog.LogManager.GetCurrentClassLogger();
+
+    public SQLService(IServiceProvider serviceProvider,
+                      IProfiler profiler,
+                      ISaveTableDBTaskFactory saveTableTaskFactory,
+                      ISaveColumnDBTaskFactory saveColumnTaskFactory,
+                      ISelectDBTaskFactory selectDBTaskFactory,
+                      ITransactionDBTaskFactory transactionTaskFactory)
     {
-        this.TaskFactory = taskFactory;
+        this.ServiceProvider = serviceProvider;
         this.Profiler = profiler;
+        this.SaveTableTaskFactory = saveTableTaskFactory;
+        this.SaveColumnTaskFactory = saveColumnTaskFactory;
+        this.SelectDBTaskFactory = selectDBTaskFactory;
+        this.TransactionTaskFactory = transactionTaskFactory;
     }
 
-    internal async Task<JsonResult> GetJson(string query, CancellationToken cancellationToken)
+    internal async Task<JsonResult> GetJson(JsonRequest request, CancellationToken cancellationToken)
     {
-        this.Profiler.RequestStart();
+        this.Profiler.RequestStart(request.ProfilerIsActive);
         this.Profiler.Start(Phases.QueueParse);
-        byte[] originalsQueryBytes = Encoding.UTF8.GetBytes(query);
+        byte[] originalsQueryBytes = Encoding.UTF8.GetBytes(request.Query);
         using var rdr = new StreamReader(new MemoryStream(originalsQueryBytes));
 
         var parser = new TSql160Parser(true, SqlEngineType.All);
@@ -50,7 +71,7 @@ internal class SQLService
         var batches = new List<ITransactionDBTask>(tree.Batches.Count);
         foreach (var batch in tree.Batches)
         {
-            var transaction = this.TaskFactory.CreateTransactionTask();
+            var transaction = this.TransactionTaskFactory.CreateTask(this.ServiceProvider);
             batches.Add(transaction);
 
             foreach (var statement in batch.Statements)
@@ -84,10 +105,17 @@ internal class SQLService
         var result = new List<Dictionary<string, object>[]>(batches.Count);
         foreach (var batch in batches)
         {
-            var executeResult = await batch.Execute();
+            try
+            {
+                await batch.Execute();
+            }
+            catch (Exception ex)
+            {
+                this.Logger.Error(ex);
+            }
 
             this.Profiler.Start(Phases.TransformResult);
-            result.AddRange(await Convet(executeResult, cancellationToken));
+            result.AddRange(await Convet(batch.Result, cancellationToken));
             this.Profiler.End(Phases.TransformResult);
         }
 
@@ -125,12 +153,20 @@ internal class SQLService
                     case IDBTaskTableResult tableResult:
                         {
                             var result = new List<Dictionary<string, object>>();
+                            var columns = new Queue<IDBColumn>(tableResult.Columns);
+                            var countColumns = columns.Count;
+
                             await foreach (var row in tableResult.Rows().WithCancellation(cancellationToken))
                             {
-                                var resultRow = new Dictionary<string, object>(tableResult.Columns.Count);
-                                for (int i = 0; i < tableResult.Columns.Count; i++)
+                                var resultRow = new Dictionary<string, object>(countColumns);
+                                var columnIterator = columns.GetEnumerator();
+                                var rowIterator = row.GetEnumerator();
+
+                                for (int i = 0; i < countColumns; i++)
                                 {
-                                    resultRow.Add(tableResult.Columns[i].Name, row[i]);
+                                    resultRow.Add(columnIterator.Current.Name, rowIterator.Current);
+                                    columnIterator.MoveNext();
+                                    rowIterator.MoveNext();
                                 }
                                 result.Add(resultRow);
                             }
@@ -159,22 +195,23 @@ internal class SQLService
     private void ParseСreateTable(CreateTableStatement createTableStatement, ICollection<IDBTask> tasks)
     {
         #region table settings
-        var task = this.TaskFactory.CreateSaveTableTask();
-        tasks.Add(task);
+        var saveTableTaskParams = new SaveTableTaskParams();
 
-        task.IsNewTable = true;
-        task.Name = createTableStatement.SchemaObjectName.BaseIdentifier.Value;
+        saveTableTaskParams.IsNewTable = true;
+        saveTableTaskParams.Name = createTableStatement.SchemaObjectName.BaseIdentifier.Value;
+
+        var task = this.SaveTableTaskFactory.CreateTask(this.ServiceProvider, saveTableTaskParams);
+        tasks.Add(task);
         #endregion
 
         #region column settings
         foreach (var columnDefinition in createTableStatement.Definition.ColumnDefinitions)
         {
-            var column = this.TaskFactory.CreateSaveColumnTask();
-            tasks.Add(column);
+            var taskParams = new SaveColumnTaskParams();
 
-            column.IsNewColumn = true;
-            column.Name = columnDefinition.ColumnIdentifier.Value;
-            column.TypeName = columnDefinition.DataType.Name.BaseIdentifier.Value.ToLower(CultureInfo.InvariantCulture);
+            taskParams.IsNewColumn = true;
+            taskParams.Name = columnDefinition.ColumnIdentifier.Value;
+            taskParams.TypeName = columnDefinition.DataType.Name.BaseIdentifier.Value.ToLower(CultureInfo.InvariantCulture);
 
             foreach (var constraint in columnDefinition.Constraints)
             {
@@ -182,13 +219,13 @@ internal class SQLService
                 {
                     case NullableConstraintDefinition nullableConstraint:
                         {
-                            column.IsNull = nullableConstraint.Nullable;
+                            taskParams.IsNull = nullableConstraint.Nullable;
                             break;
                         }
                     case UniqueConstraintDefinition uniqueConstraint:
                         {
-                            column.IsUnique = true;
-                            column.IsPrimaryKey = uniqueConstraint.IsPrimaryKey;
+                            taskParams.IsUnique = true;
+                            taskParams.IsPrimaryKey = uniqueConstraint.IsPrimaryKey;
                             break;
                         }
                     default:
@@ -197,13 +234,16 @@ internal class SQLService
                         }
                 }
             }
+
+            var column = this.SaveColumnTaskFactory.CreateTask(this.ServiceProvider, taskParams);
+            tasks.Add(column);
         }
         #endregion
     }
 
     private ISelectDBTask ParseSelect(SelectStatement selectStatement, ICollection<IDBTask> tasks)
     {
-        var task = this.TaskFactory.CreateSelectTask();
+        var task = this.SelectDBTaskFactory.CreateTask(this.ServiceProvider);
 
         return task;
     }

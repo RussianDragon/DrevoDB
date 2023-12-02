@@ -2,5 +2,5 @@
 
 public interface IDBTaskCollectionResult : IDBTaskResult
 {
-    IReadOnlyList<IDBTaskResult> Items { get; }
+    IEnumerable<IDBTaskResult> Items { get; }
 }

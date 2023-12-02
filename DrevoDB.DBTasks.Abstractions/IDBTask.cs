@@ -1,6 +1,10 @@
-﻿namespace DrevoDB.DBTasks.Abstractions;
+﻿using DrevoDB.DBTasks.Abstractions.TaskResult;
+
+namespace DrevoDB.DBTasks.Abstractions;
 
 public interface IDBTask
 {
-    Task<IDBTaskResult> Execute();
+    IDBTaskResult Result { get; }
+    Task Execute(CancellationToken cancellationToken = default);
+    Task Reverse();
 }

@@ -5,7 +5,7 @@ public interface IProfiler
 {
     IProfilerResult Result { get; }
 
-    void RequestStart();
+    void RequestStart(bool profilerIsActive);
     void RequestEnd();
 
     void Start(Phases phase);

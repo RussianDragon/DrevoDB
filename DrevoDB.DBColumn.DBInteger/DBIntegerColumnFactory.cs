@@ -6,16 +6,10 @@ namespace DrevoDB.DBColumn.DBInteger;
 internal class DBIntegerColumnFactory : IDBColumnFactory
 {
     public string TypeName => "integer";
-    private IServiceProvider ServiceProvider { get; }
 
-    public DBIntegerColumnFactory(IServiceProvider serviceProvider)
+    public IDBColumn CreateColumn(IServiceProvider serviceProvider, string name, IEnumerable<DBColumnParam> columnParams)
     {
-        this.ServiceProvider = serviceProvider;
-    }
-
-    public IDBColumn CrateColumn(string name, IEnumerable<DBColumnParam> columnParams)
-    {
-        var column = this.ServiceProvider.GetRequiredService<DBIntegerColumn>();
+        var column = serviceProvider.GetRequiredService<DBIntegerColumn>();
         column.Name = name;
         //TODO инциализировать columnParams
 

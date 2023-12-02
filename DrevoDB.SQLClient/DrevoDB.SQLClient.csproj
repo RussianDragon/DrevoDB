@@ -11,12 +11,17 @@
 	
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.SqlServer.TransactSql.ScriptDom" Version="161.8910.0" />
+	  <PackageReference Include="NLog" Version="5.2.7" />
 	</ItemGroup>
 	
 	<ItemGroup>
 	  <ProjectReference Include="..\DrevoDB.Core\DrevoDB.Core.csproj" />
 	  <ProjectReference Include="..\DrevoDB.DBProfiler.Abstractions\DrevoDB.DBProfiler.Abstractions.csproj" />
+	  <ProjectReference Include="..\DrevoDB.DBSaveColumnTask.Abstractions\DrevoDB.DBSaveColumnTask.Abstractions.csproj" />
+	  <ProjectReference Include="..\DrevoDB.DBSaveTableTask.Abstractions\DrevoDB.DBSaveTableTask.Abstractions.csproj" />
+	  <ProjectReference Include="..\DrevoDB.DBSelectTask.Abstractions\DrevoDB.DBSelectTask.Abstractions.csproj" />
 	  <ProjectReference Include="..\DrevoDB.DBTasks.Abstractions\DrevoDB.DBTasks.Abstractions.csproj" />
+	  <ProjectReference Include="..\DrevoDB.DBTransactionTask.Abstractions\DrevoDB.DBTransactionTask.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>

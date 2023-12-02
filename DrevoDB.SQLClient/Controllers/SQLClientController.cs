@@ -14,6 +14,6 @@ public class SQLClientController : ControllerBase
     }
 
     [HttpPost("[action]")]
-    public Task<DrevoDB.SQLClient.Models.JsonResult> GetJson([FromBody] string query, CancellationToken cancellationToken)
-        => this.SQLService.GetJson(query, cancellationToken);
+    public Task<Models.JsonResult> GetJson([FromBody] Requests.JsonRequest request, CancellationToken cancellationToken)
+        => this.SQLService.GetJson(request, cancellationToken);
 }

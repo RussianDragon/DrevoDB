@@ -6,8 +6,13 @@ using DrevoDB.DBColumn.DBInteger;
 using DrevoDB.DBColumn.DBText;
 using DrevoDB.DBColumn.DBTime;
 using DrevoDB.DBColumns;
+using DrevoDB.DBDropColumnTask;
+using DrevoDB.DBDropTableTask;
 using DrevoDB.DBProfiler;
-using DrevoDB.DBTasks;
+using DrevoDB.DBSaveColumnTask;
+using DrevoDB.DBSaveTableTask;
+using DrevoDB.DBSelectTask;
+using DrevoDB.DBTransactionTask;
 using DrevoDB.Server.Infrastructure;
 using DrevoDB.Server.Infrastructure.Models;
 using DrevoDB.Server.Settings;
@@ -55,16 +60,25 @@ builder.Services.AddSingleton(webApiSettings);
 
 #region  Modules
 builder.Services.AddDBProfiler();
-builder.Services.AddDBTasks();
 builder.Services.AddSQLClient();
 builder.Services.AddDBColumnsFactory();
-#region  Columns
+
+#region Columns
 builder.Services.AddDBTextColumnFactory();
 builder.Services.AddDBCharColumnFactory();
 builder.Services.AddDBIntegerColumnFactory();
 builder.Services.AddDBTimeColumnFactory();
 builder.Services.AddDBDateTimeColumnFactory();
 builder.Services.AddDBDateColumnFactory();
+#endregion
+
+#region Tasks
+builder.Services.AddDropColumnDBTaskFactory();
+builder.Services.AddDropTableDBTaskFactory();
+builder.Services.AddSaveColumnDBTaskFactory();
+builder.Services.AddSaveTableDBTaskFactory();
+builder.Services.AddSelectDBTaskFactory();
+builder.Services.AddTransactionDBTaskFactory();
 #endregion
 #endregion
 

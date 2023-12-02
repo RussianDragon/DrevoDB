@@ -4,6 +4,6 @@ namespace DrevoDB.DBTasks.Abstractions.TaskResult;
 
 public interface IDBTaskTableResult : IDBTaskResult
 {
-    IReadOnlyList<IDBColumn> Columns { get; }
-    IAsyncEnumerable<IReadOnlyList<object>> Rows();
+    IEnumerable<IDBColumn> Columns { get; }
+    IAsyncEnumerable<IEnumerable<object>> Rows();
 }

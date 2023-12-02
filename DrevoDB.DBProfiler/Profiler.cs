@@ -4,6 +4,7 @@ namespace DrevoDB.DBProfiler;
 
 public class Profiler : IProfiler
 {
+    private bool ProfilerIsActive { get; set; }
     private ProfilerPeriod RequestPeriod { get; }
     private Dictionary<Phases, Stack<ProfilerPeriod>> Phases { get; }
 
@@ -28,8 +29,9 @@ public class Profiler : IProfiler
         this.Phases = Enum.GetValues<Phases>().ToDictionary(phase => phase, _ => new Stack<ProfilerPeriod>());
     }
 
-    public void RequestStart()
+    public void RequestStart(bool profilerIsActive)
     {
+        this.ProfilerIsActive = profilerIsActive;
         this.RequestPeriod.Start = DateTime.UtcNow;
     }
 
@@ -40,14 +42,20 @@ public class Profiler : IProfiler
 
     public void Start(Phases phase)
     {
-        this.Phases[phase].Push(new ProfilerPeriod()
+        if (this.ProfilerIsActive)
         {
-            Start = DateTime.UtcNow
-        });
+            this.Phases[phase].Push(new ProfilerPeriod()
+            {
+                Start = DateTime.UtcNow
+            });
+        }
     }
 
     public void End(Phases phase)
     {
-        this.Phases[phase].Peek().End = DateTime.UtcNow;
+        if (this.ProfilerIsActive)
+        {
+            this.Phases[phase].Peek().End = DateTime.UtcNow;
+        }
     }
 }

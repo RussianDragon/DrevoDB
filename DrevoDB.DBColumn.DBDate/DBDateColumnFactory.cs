@@ -6,16 +6,10 @@ namespace DrevoDB.DBColumn.DBDate;
 public class DBDateColumnFactory : IDBColumnFactory
 {
     public string TypeName => "date";
-    private IServiceProvider ServiceProvider { get; }
 
-    public DBDateColumnFactory(IServiceProvider serviceProvider)
+    public IDBColumn CreateColumn(IServiceProvider serviceProvider, string name, IEnumerable<DBColumnParam> columnParams)
     {
-        this.ServiceProvider = serviceProvider;
-    }
-
-    public IDBColumn CrateColumn(string name, IEnumerable<DBColumnParam> columnParams)
-    {
-        var column = this.ServiceProvider.GetRequiredService<DBDateColumn>();
+        var column = serviceProvider.GetRequiredService<DBDateColumn>();
         column.Name = name;
         //TODO инциализировать columnParams
 
