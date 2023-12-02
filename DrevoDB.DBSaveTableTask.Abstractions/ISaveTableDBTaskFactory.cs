@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace DrevoDB.DBSaveTableTask.Abstractions;
+﻿namespace DrevoDB.DBSaveTableTask.Abstractions;
 
 public interface ISaveTableDBTaskFactory
 {

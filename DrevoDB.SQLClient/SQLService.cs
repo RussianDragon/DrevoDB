@@ -1,5 +1,6 @@
 ﻿using DrevoDB.Core;
 using DrevoDB.DBColumn.Abstractions;
+using DrevoDB.DBSaveDatabaseTask.Abstractions;
 using DrevoDB.DBProfiler.Abstractions;
 using DrevoDB.DBSaveColumnTask.Abstractions;
 using DrevoDB.DBSaveTableTask.Abstractions;
@@ -20,24 +21,15 @@ internal class SQLService
 {
     private IServiceProvider ServiceProvider { get; }
     private IProfiler Profiler { get; }
-    private ISaveTableDBTaskFactory SaveTableTaskFactory { get; }
-    private ISaveColumnDBTaskFactory SaveColumnTaskFactory { get; }
-    private ISelectDBTaskFactory SelectDBTaskFactory { get; }
     private ITransactionDBTaskFactory TransactionTaskFactory { get; }
     private NLog.ILogger Logger { get; } = NLog.LogManager.GetCurrentClassLogger();
 
     public SQLService(IServiceProvider serviceProvider,
                       IProfiler profiler,
-                      ISaveTableDBTaskFactory saveTableTaskFactory,
-                      ISaveColumnDBTaskFactory saveColumnTaskFactory,
-                      ISelectDBTaskFactory selectDBTaskFactory,
                       ITransactionDBTaskFactory transactionTaskFactory)
     {
         this.ServiceProvider = serviceProvider;
         this.Profiler = profiler;
-        this.SaveTableTaskFactory = saveTableTaskFactory;
-        this.SaveColumnTaskFactory = saveColumnTaskFactory;
-        this.SelectDBTaskFactory = selectDBTaskFactory;
         this.TransactionTaskFactory = transactionTaskFactory;
     }
 
@@ -80,12 +72,12 @@ internal class SQLService
                 {
                     case SelectStatement selectStatement:
                         {
-                            this.ParseSelect(selectStatement, transaction.Tasks);
+                            this.ParseSelect(selectStatement, transaction);
                             break;
                         }
                     case CreateTableStatement createTableStatement:
                         {
-                            this.ParseСreateTable(createTableStatement, transaction.Tasks);
+                            this.ParseСreateTable(createTableStatement, transaction);
                             break;
                         }
                     //case CreateProcedureStatement createProcedureStatement:
@@ -93,6 +85,11 @@ internal class SQLService
                     //        this.(createProcedureStatement, tasks)
                     //                break;
                     //    }
+                    case CreateDatabaseStatement createDatabaseStatement:
+                        {
+                            this.ParseCreateDatabaseStatement(createDatabaseStatement, transaction);
+                            break;
+                        }
                     default:
                         {
                             throw new ApiException(System.Net.HttpStatusCode.BadRequest, $"Not support {string.Join("", statement.ScriptTokenStream.Select(sts => sts.Text))}");
@@ -192,7 +189,13 @@ internal class SQLService
         }
     }
 
-    private void ParseСreateTable(CreateTableStatement createTableStatement, ICollection<IDBTask> tasks)
+    private void ParseSelect(SelectStatement selectStatement, ITransactionDBTask transaction)
+    {
+        transaction.AddTask(this.ServiceProvider.GetRequiredService<ISelectDBTaskFactory>()
+                                                .CreateTask(this.ServiceProvider));
+    }
+
+    private void ParseСreateTable(CreateTableStatement createTableStatement, ITransactionDBTask transaction)
     {
         #region table settings
         var saveTableTaskParams = new SaveTableTaskParams();
@@ -200,8 +203,8 @@ internal class SQLService
         saveTableTaskParams.IsNewTable = true;
         saveTableTaskParams.Name = createTableStatement.SchemaObjectName.BaseIdentifier.Value;
 
-        var task = this.SaveTableTaskFactory.CreateTask(this.ServiceProvider, saveTableTaskParams);
-        tasks.Add(task);
+        transaction.AddTask(this.ServiceProvider.GetRequiredService<ISaveTableDBTaskFactory>()
+                                .CreateTask(this.ServiceProvider, saveTableTaskParams));
         #endregion
 
         #region column settings
@@ -235,16 +238,20 @@ internal class SQLService
                 }
             }
 
-            var column = this.SaveColumnTaskFactory.CreateTask(this.ServiceProvider, taskParams);
-            tasks.Add(column);
+            transaction.AddTask(this.ServiceProvider.GetRequiredService<ISaveColumnDBTaskFactory>()
+                                                    .CreateTask(this.ServiceProvider, taskParams));
         }
         #endregion
     }
 
-    private ISelectDBTask ParseSelect(SelectStatement selectStatement, ICollection<IDBTask> tasks)
+    private void ParseCreateDatabaseStatement(CreateDatabaseStatement createDatabaseStatement, ITransactionDBTask transaction)
     {
-        var task = this.SelectDBTaskFactory.CreateTask(this.ServiceProvider);
+        var taskParams = new SaveDatabaseTaskParams();
 
-        return task;
+        taskParams.IsNewDatabase = true;
+        taskParams.Name = createDatabaseStatement.DatabaseName.Value;
+
+        transaction.AddTask(this.ServiceProvider.GetRequiredService<ISaveDatabaseDBTaskFactory>()
+                                                .CreateTask(this.ServiceProvider, taskParams));
     }
 }

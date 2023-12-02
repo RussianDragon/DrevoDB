@@ -16,8 +16,10 @@
 	
 	<ItemGroup>
 	  <ProjectReference Include="..\DrevoDB.Core\DrevoDB.Core.csproj" />
+	  <ProjectReference Include="..\DrevoDB.DBCreateDatabaseTask.Abstractions\DrevoDB.DBSaveDatabaseTask.Abstractions.csproj" />
 	  <ProjectReference Include="..\DrevoDB.DBProfiler.Abstractions\DrevoDB.DBProfiler.Abstractions.csproj" />
 	  <ProjectReference Include="..\DrevoDB.DBSaveColumnTask.Abstractions\DrevoDB.DBSaveColumnTask.Abstractions.csproj" />
+	  <ProjectReference Include="..\DrevoDB.DBSaveDatabaseTask.Abstractions\DrevoDB.DBSaveDatabaseTask.Abstractions.csproj" />
 	  <ProjectReference Include="..\DrevoDB.DBSaveTableTask.Abstractions\DrevoDB.DBSaveTableTask.Abstractions.csproj" />
 	  <ProjectReference Include="..\DrevoDB.DBSelectTask.Abstractions\DrevoDB.DBSelectTask.Abstractions.csproj" />
 	  <ProjectReference Include="..\DrevoDB.DBTasks.Abstractions\DrevoDB.DBTasks.Abstractions.csproj" />

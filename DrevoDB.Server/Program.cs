@@ -6,6 +6,7 @@ using DrevoDB.DBColumn.DBInteger;
 using DrevoDB.DBColumn.DBText;
 using DrevoDB.DBColumn.DBTime;
 using DrevoDB.DBColumns;
+using DrevoDB.DBSaveDatabaseTask;
 using DrevoDB.DBDropColumnTask;
 using DrevoDB.DBDropTableTask;
 using DrevoDB.DBProfiler;
@@ -73,6 +74,7 @@ builder.Services.AddDBDateColumnFactory();
 #endregion
 
 #region Tasks
+builder.Services.AddSaveDatabaseDBTaskFactory();
 builder.Services.AddDropColumnDBTaskFactory();
 builder.Services.AddDropTableDBTaskFactory();
 builder.Services.AddSaveColumnDBTaskFactory();

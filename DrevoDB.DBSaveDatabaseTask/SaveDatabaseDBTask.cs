@@ -1,23 +1,22 @@
-﻿using DrevoDB.DBSaveTableTask.Abstractions;
-using DrevoDB.DBSaveTableTask.Models;
+﻿using DrevoDB.DBSaveDatabaseTask.Abstractions;
+using DrevoDB.DBSaveDatabaseTask.Models;
 using DrevoDB.DBTasks.Abstractions;
 using DrevoDB.DBTasks.Abstractions.TaskResult;
 
-namespace DrevoDB.DBSaveTableTask;
+namespace DrevoDB.DBSaveDatabaseTask;
 
-internal class SaveTableDBTask : ISaveTableDBTask
+internal class SaveDatabaseDBTask : ISaveDatabaseDBTask
 {
-    public bool IsNewTable { get; set; }
+    public bool IsNewDatabase { get; set; }
+
     public string Name { get; set; } = string.Empty;
 
     IDBTaskResult IDBTask.Result => this.Result;
     public DBTaskResult Result { get; } = new DBTaskResult();
 
-
     public Task Execute(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
-        //this.Result.Equals(this.Result);
     }
 
     public Task Reverse()

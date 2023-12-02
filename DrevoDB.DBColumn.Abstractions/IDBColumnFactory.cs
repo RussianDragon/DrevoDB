@@ -1,5 +1,4 @@
 ﻿namespace DrevoDB.DBColumn.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 
 public interface IDBColumnFactory
 {

@@ -4,5 +4,6 @@ namespace DrevoDB.DBTransactionTask.Abstractions;
 
 public interface ITransactionDBTask : IDBTask
 {
-    ICollection<IDBTask> Tasks { get; }
+    IEnumerable<IDBTask> Tasks { get; }
+    void AddTask(IDBTask taks);
 }

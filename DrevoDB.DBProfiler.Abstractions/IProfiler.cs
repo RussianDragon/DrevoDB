@@ -1,5 +1,4 @@
-﻿
-namespace DrevoDB.DBProfiler.Abstractions;
+﻿namespace DrevoDB.DBProfiler.Abstractions;
 
 public interface IProfiler
 {

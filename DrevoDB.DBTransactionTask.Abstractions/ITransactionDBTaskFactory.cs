@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace DrevoDB.DBTransactionTask.Abstractions;
+﻿namespace DrevoDB.DBTransactionTask.Abstractions;
 
 public interface ITransactionDBTaskFactory
 {

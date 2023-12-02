@@ -1,5 +1,5 @@
-﻿using DrevoDB.DBTasks.Abstractions.TaskResult;
-using DrevoDB.DBTasks.Abstractions;
+﻿using DrevoDB.DBTasks.Abstractions;
+using DrevoDB.DBTasks.Abstractions.TaskResult;
 using DrevoDB.DBTransactionTask.Abstractions;
 using DrevoDB.DBTransactionTask.Models;
 
@@ -7,7 +7,9 @@ namespace DrevoDB.DBTransactionTask;
 
 internal class TransactionDBTask : ITransactionDBTask
 {
-    public ICollection<IDBTask> Tasks { get; } = new List<IDBTask>();
+    IEnumerable<IDBTask> ITransactionDBTask.Tasks => this.Tasks;
+    public Queue<IDBTask> Tasks { get; } = new Queue<IDBTask>();
+
     IDBTaskResult IDBTask.Result => this.Result;
     public DBTaskResult Result { get; } = new DBTaskResult();
 
@@ -15,6 +17,7 @@ internal class TransactionDBTask : ITransactionDBTask
     private NLog.ILogger Logger { get; } = NLog.LogManager.GetCurrentClassLogger();
 
     private bool IsReversed { get; set; } = false;
+
 
     public async Task Execute(CancellationToken cancellationToken)
     {
@@ -48,5 +51,10 @@ internal class TransactionDBTask : ITransactionDBTask
             await task.Reverse();
             this.Result.Items.Enqueue(task.Result);
         }
+    }
+
+    public void AddTask(IDBTask taks)
+    {
+        this.Tasks.Enqueue(taks);
     }
 }

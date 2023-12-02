@@ -78,17 +78,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrevoDB.DBSelectTask.Abstra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrevoDB.DBTransactionTask.Abstractions", "DrevoDB.DBTransactionTask.Abstractions\DrevoDB.DBTransactionTask.Abstractions.csproj", "{3159D555-E085-4080-9F2B-D65864F3E131}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrevoDB.DBDropColumnTask", "DrevoDB.DBDropColumnTask\DrevoDB.DBDropColumnTask.csproj", "{73F83D48-2649-4B9C-8E9E-39C99A5DF5CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrevoDB.DBDropColumnTask", "DrevoDB.DBDropColumnTask\DrevoDB.DBDropColumnTask.csproj", "{73F83D48-2649-4B9C-8E9E-39C99A5DF5CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrevoDB.DBDropTableTask", "DrevoDB.DBDropTableTask\DrevoDB.DBDropTableTask.csproj", "{006CD5FA-0B6A-40D2-99C1-9C86672E6A13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrevoDB.DBDropTableTask", "DrevoDB.DBDropTableTask\DrevoDB.DBDropTableTask.csproj", "{006CD5FA-0B6A-40D2-99C1-9C86672E6A13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrevoDB.DBSaveColumnTask", "DrevoDB.DBSaveColumnTask\DrevoDB.DBSaveColumnTask.csproj", "{9ABE5FEB-A29D-485B-B932-AA497855E729}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrevoDB.DBSaveColumnTask", "DrevoDB.DBSaveColumnTask\DrevoDB.DBSaveColumnTask.csproj", "{9ABE5FEB-A29D-485B-B932-AA497855E729}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrevoDB.DBSaveTableTask", "DrevoDB.DBSaveTableTask\DrevoDB.DBSaveTableTask.csproj", "{7ECC134E-1031-4E10-BF55-6506FCFF2056}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrevoDB.DBSaveTableTask", "DrevoDB.DBSaveTableTask\DrevoDB.DBSaveTableTask.csproj", "{7ECC134E-1031-4E10-BF55-6506FCFF2056}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrevoDB.DBSelectTask", "DrevoDB.DBSelectTask\DrevoDB.DBSelectTask.csproj", "{6BC1F93C-2E23-44E5-951B-B89FD47DE720}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrevoDB.DBSelectTask", "DrevoDB.DBSelectTask\DrevoDB.DBSelectTask.csproj", "{6BC1F93C-2E23-44E5-951B-B89FD47DE720}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrevoDB.DBTransactionTask", "DrevoDB.DBTransactionTask\DrevoDB.DBTransactionTask.csproj", "{FF0947CD-1CF1-45F6-B0A5-93738C2BA8BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrevoDB.DBTransactionTask", "DrevoDB.DBTransactionTask\DrevoDB.DBTransactionTask.csproj", "{FF0947CD-1CF1-45F6-B0A5-93738C2BA8BA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrevoDB.DBSaveDatabaseTask.Abstractions", "DrevoDB.DBSaveDatabaseTask.Abstractions\DrevoDB.DBSaveDatabaseTask.Abstractions.csproj", "{FB534AC8-4AE9-4BC9-9491-C351BF3D314F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrevoDB.DBSaveDatabaseTask", "DrevoDB.DBSaveDatabaseTask\DrevoDB.DBSaveDatabaseTask.csproj", "{26C29452-31EC-4467-B81D-AC218B539F52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -204,6 +208,14 @@ Global
 		{FF0947CD-1CF1-45F6-B0A5-93738C2BA8BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF0947CD-1CF1-45F6-B0A5-93738C2BA8BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF0947CD-1CF1-45F6-B0A5-93738C2BA8BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB534AC8-4AE9-4BC9-9491-C351BF3D314F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB534AC8-4AE9-4BC9-9491-C351BF3D314F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB534AC8-4AE9-4BC9-9491-C351BF3D314F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB534AC8-4AE9-4BC9-9491-C351BF3D314F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26C29452-31EC-4467-B81D-AC218B539F52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26C29452-31EC-4467-B81D-AC218B539F52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26C29452-31EC-4467-B81D-AC218B539F52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26C29452-31EC-4467-B81D-AC218B539F52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -245,6 +257,8 @@ Global
 		{7ECC134E-1031-4E10-BF55-6506FCFF2056} = {1F53DD7A-5C31-470F-A18E-D5A13EFBCD03}
 		{6BC1F93C-2E23-44E5-951B-B89FD47DE720} = {1F53DD7A-5C31-470F-A18E-D5A13EFBCD03}
 		{FF0947CD-1CF1-45F6-B0A5-93738C2BA8BA} = {1F53DD7A-5C31-470F-A18E-D5A13EFBCD03}
+		{FB534AC8-4AE9-4BC9-9491-C351BF3D314F} = {C0D4A69B-CA52-457B-8503-689344934893}
+		{26C29452-31EC-4467-B81D-AC218B539F52} = {1F53DD7A-5C31-470F-A18E-D5A13EFBCD03}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1F51BC51-FA46-4BB2-9872-42F802B47BB2}

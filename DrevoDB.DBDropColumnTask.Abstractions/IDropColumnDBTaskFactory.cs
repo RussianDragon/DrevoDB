@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace DrevoDB.DBDropColumnTask.Abstractions;
+﻿namespace DrevoDB.DBDropColumnTask.Abstractions;
 
 public interface IDropColumnDBTaskFactory
 {

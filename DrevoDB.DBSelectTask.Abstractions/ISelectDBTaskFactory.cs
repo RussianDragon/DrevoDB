@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace DrevoDB.DBSelectTask.Abstractions;
+﻿namespace DrevoDB.DBSelectTask.Abstractions;
 
 public interface ISelectDBTaskFactory
 {
