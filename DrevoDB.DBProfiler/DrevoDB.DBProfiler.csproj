@@ -1,22 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.SqlServer.TransactSql.ScriptDom" Version="161.8910.0" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <ProjectReference Include="..\DrevoDB.Core\DrevoDB.Core.csproj" />
 	  <ProjectReference Include="..\DrevoDB.DBProfiler.Abstractions\DrevoDB.DBProfiler.Abstractions.csproj" />
-	  <ProjectReference Include="..\DrevoDB.DBTasks.Abstractions\DrevoDB.DBTasks.Abstractions.csproj" />
 	</ItemGroup>
 
 </Project>

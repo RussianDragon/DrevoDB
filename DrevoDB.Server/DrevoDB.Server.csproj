@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DrevoDB.Core\DrevoDB.Core.csproj" />
+    <ProjectReference Include="..\DrevoDB.DBProfiler\DrevoDB.DBProfiler.csproj" />
     <ProjectReference Include="..\DrevoDB.DBTasks\DrevoDB.DBTasks.csproj" />
     <ProjectReference Include="..\DrevoDB.SQLClient\DrevoDB.SQLClient.csproj" />
   </ItemGroup>

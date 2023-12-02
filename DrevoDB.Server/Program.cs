@@ -1,4 +1,5 @@
 using DrevoDB.Core;
+using DrevoDB.DBProfiler;
 using DrevoDB.DBTasks;
 using DrevoDB.Server.Infrastructure;
 using DrevoDB.Server.Infrastructure.Models;
@@ -46,8 +47,9 @@ builder.Services.AddSingleton(webApiSettings);
 #endregion
 
 #region  Modules
-builder.Services.AddSQLClient();
+builder.Services.AddDBProfiler();
 builder.Services.AddDBTasks();
+builder.Services.AddSQLClient();
 #endregion
 
 builder.Services.AddEndpointsApiExplorer();

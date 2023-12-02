@@ -1,26 +1,32 @@
 ﻿using DrevoDB.Core;
+using DrevoDB.DBProfiler.Abstractions;
 using DrevoDB.DBTasks.Abstractions;
 using DrevoDB.DBTasks.Abstractions.TaskResult;
 using DrevoDB.DBTasks.Abstractions.Tasks;
 using DrevoDB.InfrastructureTypes;
+using DrevoDB.SQLClient.Models;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
-using System;
-using System.Collections.Generic;
+using System.Data.Common;
 using System.Globalization;
 using System.Text;
+using System.Transactions;
 
 namespace DrevoDB.SQLClient;
 
 internal class SQLService
 {
     private IDBTaskFactory TaskFactory { get; }
-    public SQLService(IDBTaskFactory taskFactory)
+    private IProfiler Profiler { get; }
+    public SQLService(IDBTaskFactory taskFactory, IProfiler profiler)
     {
         this.TaskFactory = taskFactory;
+        this.Profiler = profiler;
     }
 
-    internal async Task<Dictionary<string, object>[][]> GetJson(string query, CancellationToken cancellationToken)
+    internal async Task<JsonResult> GetJson(string query, CancellationToken cancellationToken)
     {
+        this.Profiler.RequestStart();
+        this.Profiler.Start(Phases.QueueParse);
         byte[] originalsQueryBytes = Encoding.UTF8.GetBytes(query);
         using var rdr = new StreamReader(new MemoryStream(originalsQueryBytes));
 
@@ -43,10 +49,13 @@ internal class SQLService
         }
         #endregion
 
-        var result = new List<Dictionary<string, object>[]>(tree.Batches.Count);
+
+        var batches = new List<ITransactionDBTask>(tree.Batches.Count);
         foreach (var batch in tree.Batches)
         {
             var transaction = this.TaskFactory.CreateTransactionTask();
+            batches.Add(transaction);
+
             foreach (var statement in batch.Statements)
             {
                 switch (statement)
@@ -72,11 +81,28 @@ internal class SQLService
                         }
                 };
             }
+        }
+        this.Profiler.End(Phases.QueueParse);
 
-            result.AddRange(await Convet(await transaction.Execute(), cancellationToken));
+        var result = new List<Dictionary<string, object>[]>(batches.Count);
+        foreach (var batch in batches)
+        {
+            var executeResult = await batch.Execute();
+
+            this.Profiler.Start(Phases.TransformResult);
+            result.AddRange(await Convet(executeResult, cancellationToken));
+            this.Profiler.End(Phases.TransformResult);
         }
 
-        return result.ToArray();
+        this.Profiler.RequestEnd();
+        var profiler = this.Profiler.Result;
+        return new JsonResult()
+        {
+            RequestElapsed = profiler.RequestElapsed,
+            Profile = profiler.ElapsedPhases.ToDictionary(phase => phase.Key.ToString(), phase => phase.Value),
+            ElapsedTime = profiler.Total,
+            Result = result.ToArray(),
+        };
         static async Task<Dictionary<string, object>[][]> Convet(IDBTaskResult dBTaskResult, CancellationToken cancellationToken)
         {
             var resultCollection = new List<Dictionary<string, object>[]>();
