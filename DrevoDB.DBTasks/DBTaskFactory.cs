@@ -6,6 +6,8 @@ namespace DrevoDB.DBTasks;
 
 public class DBTaskFactory : IDBTaskFactory
 {
+    public ITransactionDBTask CreateTransactionTask() => new TransactionDBTask();
+
     public ISaveTableDBTask CreateSaveTableTask() => new SaveTableDBTask();
     public IDropTableDBTask CreateDropTableTask() => new DropTableDBTask();
 

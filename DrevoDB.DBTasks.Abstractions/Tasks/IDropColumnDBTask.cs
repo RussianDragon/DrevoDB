@@ -1,5 +1,5 @@
 ﻿namespace DrevoDB.DBTasks.Abstractions.Tasks;
 
-public interface IDropColumnDBTask
+public interface IDropColumnDBTask : IDBTask
 {
 }

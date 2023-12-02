@@ -1,8 +1,11 @@
 ﻿using DrevoDB.Core;
 using DrevoDB.DBTasks.Abstractions;
+using DrevoDB.DBTasks.Abstractions.TaskResult;
 using DrevoDB.DBTasks.Abstractions.Tasks;
 using DrevoDB.InfrastructureTypes;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
@@ -43,41 +46,95 @@ internal class SQLService
         var result = new List<Dictionary<string, object>[]>(tree.Batches.Count);
         foreach (var batch in tree.Batches)
         {
+            var transaction = this.TaskFactory.CreateTransactionTask();
             foreach (var statement in batch.Statements)
             {
-                IDBTask dbTask = statement switch
+                switch (statement)
                 {
-                    SelectStatement selectStatement => this.ParseSelect(selectStatement),
-                    CreateTableStatement createTableStatement => this.ParseСreateTable(createTableStatement),
-                    //CreateProcedureStatement createProcedureStatement => this.(createProcedureStatement),
-                    _ => throw new ApiException(System.Net.HttpStatusCode.BadRequest, $"Not support {string.Join("", statement.ScriptTokenStream.Select(sts => sts.Text))}")
+                    case SelectStatement selectStatement:
+                        {
+                            this.ParseSelect(selectStatement, transaction.Tasks);
+                            break;
+                        }
+                    case CreateTableStatement createTableStatement:
+                        {
+                            this.ParseСreateTable(createTableStatement, transaction.Tasks);
+                            break;
+                        }
+                    //case CreateProcedureStatement createProcedureStatement:
+                    //    {
+                    //        this.(createProcedureStatement, tasks)
+                    //                break;
+                    //    }
+                    default:
+                        {
+                            throw new ApiException(System.Net.HttpStatusCode.BadRequest, $"Not support {string.Join("", statement.ScriptTokenStream.Select(sts => sts.Text))}");
+                        }
                 };
-                result.Add(await Convet(await dbTask.Execute(), cancellationToken));
             }
+
+            result.AddRange(await Convet(await transaction.Execute(), cancellationToken));
         }
 
         return result.ToArray();
-        static async Task<Dictionary<string, object>[]> Convet(IDBTaskResult dBTaskResult, CancellationToken cancellationToken)
+        static async Task<Dictionary<string, object>[][]> Convet(IDBTaskResult dBTaskResult, CancellationToken cancellationToken)
         {
-            var result = new List<Dictionary<string, object>>();
-            await foreach (var row in dBTaskResult.Rows().WithCancellation(cancellationToken))
+            var resultCollection = new List<Dictionary<string, object>[]>();
+            await Convet(dBTaskResult: dBTaskResult,
+                         resultCollection: resultCollection,
+                         cancellationToken: cancellationToken);
+            return resultCollection.ToArray();
+            static async Task Convet(IDBTaskResult dBTaskResult,
+                                     List<Dictionary<string, object>[]> resultCollection,
+                                     CancellationToken cancellationToken)
             {
-                var resultRow = new Dictionary<string, object>(dBTaskResult.Columns.Length);
-                for (int i = 0; i < dBTaskResult.Columns.Length; i++)
+                switch (dBTaskResult)
                 {
-                    resultRow.Add(dBTaskResult.Columns[i].Name, row[i]);
+                    case IDBTaskMessageResult messageResult:
+                        {
+                            resultCollection.Add([
+                                new Dictionary<string, object>() {
+                                    { "Result", messageResult.Message }
+                                }
+                            ]);
+                            break;
+                        }
+                    case IDBTaskTableResult tableResult:
+                        {
+                            var result = new List<Dictionary<string, object>>();
+                            await foreach (var row in tableResult.Rows().WithCancellation(cancellationToken))
+                            {
+                                var resultRow = new Dictionary<string, object>(tableResult.Columns.Count);
+                                for (int i = 0; i < tableResult.Columns.Count; i++)
+                                {
+                                    resultRow.Add(tableResult.Columns[i].Name, row[i]);
+                                }
+                                result.Add(resultRow);
+                            }
+                            resultCollection.Add(result.ToArray());
+                            break;
+                        }
+                    case IDBTaskCollectionResult collectionResult:
+                        {
+                            foreach (var item in collectionResult.Items)
+                            {
+                                await Convet(dBTaskResult: item,
+                                             resultCollection: resultCollection,
+                                             cancellationToken: cancellationToken);
+                            }
+                            break;
+                        }
+                    default:
+                        {
+                            throw new ApiException($"Not support result type \"{dBTaskResult.GetType()}\"");
+                        }
                 }
-                result.Add(resultRow);
-                result.Add(resultRow);
             }
-            return result.ToArray();
         }
     }
 
-    private ISaveTableDBTask ParseСreateTable(CreateTableStatement createTableStatement)
+    private void ParseСreateTable(CreateTableStatement createTableStatement, ICollection<IDBTask> tasks)
     {
-        List<IDBTask> tasks = new List<IDBTask>();
-
         #region table settings
         var task = this.TaskFactory.CreateSaveTableTask();
         tasks.Add(task);
@@ -132,11 +189,9 @@ internal class SQLService
             }
         }
         #endregion
-
-        return task;
     }
 
-    private ISelectDBTask ParseSelect(SelectStatement selectStatement)
+    private ISelectDBTask ParseSelect(SelectStatement selectStatement, ICollection<IDBTask> tasks)
     {
         var task = this.TaskFactory.CreateSelectTask();
 
